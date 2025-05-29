@@ -12,3 +12,16 @@ Also instead of compiling and linking multiple times use the makefile. Replace [
 ## 💻 About
 
 Built on Kali Linux using NASM and run via x86 architecture emulation.
+
+## 🗂 File Index (Sorted by Logic)
+
+1. [Hello.asm](./Hello.asm)
+2. [Kicking.asm](./Kicking.asm)
+3. [Move.asm](./Move.asm)
+4. [UsiIn.asm](./UsinIn.asm)
+5. [Loop.asm](./Loop.asm)
+6. [Conditional.asm](./Conditional.asm)
+7. [Arithematic.asm](./Arithematic.asm)
+8. [Pattern.asm](./Pattern.asm)
+9. [Usinarr.asm](./Usinarr.asm)
+10. [Org.asm](./Org.asm)
