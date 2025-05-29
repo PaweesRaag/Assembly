@@ -1,0 +1,35 @@
+     1                                  ;UsIn.asm
+     2                                  section .bss
+     3 00000000 <res 64h>                   input resb 100        ;stores 100 bytes for user input
+     4                                  section .data
+     5 00000000 456E7465722061206E-         msg db "Enter a no. " ;message to display
+     5 00000009 6F2E20             
+     6                                      len equ $-msg-1       ;length of the message
+     7                                  section .text
+     8                                      global main
+     9                                  main:
+    10 00000000 B801000000                  mov rax, 1           ;1 = write
+    11 00000005 BF01000000                  mov rdi, 1           ;1 = sysout
+    12 0000000A 48BE-                       mov rsi, msg         ;puts the message to display
+    12 0000000C [0000000000000000] 
+    13 00000014 BA0B000000                  mov rdx, len         ;shifts the rdi by the length of the message
+    14 00000019 0F05                        syscall              ;the message is displayed
+    15                                      
+    16 0000001B B800000000                  mov rax, 0           ;0 = read to read the user input
+    17 00000020 BF00000000                  mov rdi, 0           ;0 = sysin
+    18 00000025 48BE-                       mov rsi, input       ;"input" to store input
+    18 00000027 [0000000000000000] 
+    19 0000002F BA64000000                  mov rdx, 100         ;no. of bytes to read
+    20 00000034 0F05                        syscall              ;to successfully read the user input
+    21                                      
+    22 00000036 4889C2                      mov rdx, rax         ;puts the bytes read and held by rax in rdx
+    23                                      
+    24 00000039 B801000000                  mov rax, 1           ;1 = write
+    25 0000003E BF01000000                  mov rdi, 1           ;1 = sysout
+    26 00000043 48BE-                       mov rsi, input       ;"input" to print
+    26 00000045 [0000000000000000] 
+    27 0000004D 0F05                        syscall              ;printed
+    28                                      
+    29 0000004F B83C000000                  mov rax, 60          ;60 = sys_exit
+    30 00000054 4831FF                      xor rdi, rdi         ;rdi cleared
+    31 00000057 0F05                        syscall

@@ -1,0 +1,67 @@
+     1                                  ;Loop.asm
+     2                                  extern scanf
+     3                                  extern printf
+     4                                  
+     5                                  section .bss
+     6 00000000 ????????                    num resd 1 ;Reserve 4 bytes 
+     7 00000004 ????????                    n   resd 1
+     8                                      
+     9                                  section .data
+    10 00000000 456E7465722061204E-         msg     db "Enter a No.",0
+    10 00000009 6F2E00             
+    11 0000000C 256400                      fmt_in  db "%d",0
+    12 0000000F 25640A00                    fmt_out db "%d",10,0
+    13                                      
+    14                                  section .text
+    15                                      global main
+    16                                  main:
+    17 00000000 55                          push rbp
+    18 00000001 4889E5                      mov  rbp, rsp
+    19 00000004 4883EC10                    sub  rsp, 16 
+    20                                  
+    21                                      ;print prompt
+    22 00000008 48BF-                       mov  rdi,msg
+    22 0000000A [0000000000000000] 
+    23 00000012 4831C0                      xor  rax,rax
+    24 00000015 E8(00000000)                call printf
+    25                                      
+    26                                      ;read integer
+    27 0000001A 48BF-                       mov  rdi,fmt_in
+    27 0000001C [0C00000000000000] 
+    28 00000024 48BE-                       mov  rsi,num
+    28 00000026 [0000000000000000] 
+    29 0000002E 4831C0                      xor  rax,rax
+    30 00000031 E8(00000000)                call scanf
+    31                                      
+    32                                      ;initialize counter n=1
+    33 00000036 C70425[04000000]01-         mov  dword[n],1
+    33 0000003E 000000             
+    34                                      
+    35                                  start_loop:
+    36                                  
+    37                                      ;load counter n and num
+    38 00000041 8B0425[04000000]            mov  eax,[n]
+    39 00000048 8B1C25[00000000]            mov  ebx,[num]
+    40                                      
+    41                                      ;compare counter n > num
+    42 0000004F 39D8                        cmp eax,ebx
+    43 00000051 7F1D                        jg  loop_end
+    44                                      
+    45                                      ;print current value
+    46 00000053 89C6                        mov  esi,eax
+    47 00000055 48BF-                       mov  rdi,fmt_out
+    47 00000057 [0F00000000000000] 
+    48 0000005F 4831C0                      xor  rax,rax
+    49 00000062 E8(00000000)                call printf
+    50                                      
+    51                                      ;counter n++
+    52 00000067 FF0425[04000000]            inc  dword[n]
+    53                                      
+    54                                      ;repeat loop
+    55 0000006E EBD1                        jmp  start_loop
+    56                                      
+    57                                  loop_end:
+    58 00000070 C9                          leave
+    59 00000071 C3                          ret
+    60                                      
+    61                                      

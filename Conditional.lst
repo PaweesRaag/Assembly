@@ -1,0 +1,168 @@
+     1                                  ;Conditions.asm
+     2                                  extern scanf
+     3                                  extern printf
+     4                                  section .bss
+     5 00000000 ????????????????            num1 resq 1
+     6 00000008 ????????????????            num2 resq 1
+     7                                  section .data
+     8 00000000 456E7465722032206E-         msg     db "Enter 2 no.s for comparison: ",0         ;0 means null terminator
+     8 00000009 6F2E7320666F722063-
+     8 00000012 6F6D70617269736F6E-
+     8 0000001B 3A2000             
+     9 0000001E 256C6420256C6400            fmt_in  db "%ld %ld",0                            ;10 means newline and 0 means null    
+    10 00000026 3D3D20457175616C20-         fmt_je  db "== Equal (JE)",10,0
+    10 0000002F 284A45290A00       
+    11 00000035 213D204E6F74204571-         fmt_jne db "!= Not Equal (JNE)",10,0
+    11 0000003E 75616C20284A4E4529-
+    11 00000047 0A00               
+    12 00000049 3E2047726561746572-         fmt_jg  db "> Greater (JG)",10,0
+    12 00000052 20284A47290A00     
+    13 00000059 3E3D20477265617465-         fmt_jge db ">= Greater or Equal (JGE)",10,0
+    13 00000062 72206F722045717561-
+    13 0000006B 6C20284A4745290A00 
+    14 00000074 3C204C65737320284A-         fmt_jl  db "< Less (JL)",10,0
+    14 0000007D 4C290A00           
+    15 00000081 3C3D204C657373206F-         fmt_jle db "<= Less or Equal (JLE)",10,0
+    15 0000008A 7220457175616C2028-
+    15 00000093 4A4C45290A00       
+    16 00000099 3E20556E7369676E65-         fmt_ja  db "> Unsigned Greater (JA)",10,0
+    16 000000A2 642047726561746572-
+    16 000000AB 20284A41290A00     
+    17 000000B2 3E3D20556E7369676E-         fmt_jae db ">= Unsigned Greater or Equal (JAE)",10,0
+    17 000000BB 656420477265617465-
+    17 000000C4 72206F722045717561-
+    17 000000CD 6C20284A4145290A00 
+    18 000000D6 3C20556E7369676E65-         fmt_jb  db "< Unsigned Less (JB)",10,0
+    18 000000DF 64204C65737320284A-
+    18 000000E8 42290A00           
+    19 000000EC 3C3D20556E7369676E-         fmt_jbe db "<= Unsigned Less or Equal (JBE)",10,0
+    19 000000F5 6564204C657373206F-
+    19 000000FE 7220457175616C2028-
+    19 00000107 4A4245290A00       
+    20                                  section .text
+    21                                      global main
+    22                                  main:
+    23 00000000 55                          push rbp        ;essential don't forget initializing the stack else may cause seg_fault
+    24 00000001 4889E5                      mov  rbp, rsp
+    25 00000004 4883EC10                    sub  rsp, 16 
+    26                                      
+    27 00000008 48BF-                       mov  rdi,msg    ;First argument is always put in rdi according to SystemV AMD64 Calling Convention
+    27 0000000A [0000000000000000] 
+    28 00000012 4831C0                      xor  rax,rax  
+    29 00000015 E8(00000000)                call printf
+    30                                      
+    31 0000001A 48BF-                       mov  rdi,fmt_in ;Similarly first argument
+    31 0000001C [1E00000000000000] 
+    32 00000024 48BE-                       mov  rsi,num1   ;Second argument store num1 address
+    32 00000026 [0000000000000000] 
+    33 0000002E 48BA-                       mov  rdx,num2   ;Third argument 4th->rcx 5th->r8 6th->r9
+    33 00000030 [0800000000000000] 
+    34 00000038 4831C0                      xor  rax,rax    ;scanf needs rax=0 to indicate no xmm registers are used
+    35 0000003B E8(00000000)                call scanf      ;call scanf("%ld %ld", &num1, &num2)
+    36                                      
+    37 00000040 488B0425[00000000]          mov  rax,[num1] ;Stores the value at the address num1 ie: the user input no
+    38 00000048 488B1C25[08000000]          mov  rbx,[num2] ;similar to above
+    39                                      
+    40 00000050 4839D8                      cmp  rax,rbx    ;compares the two numbers
+    41 00000053 7441                        je   do_je      ;Equals
+    42                                      
+    43 00000055 4839D8                      cmp  rax,rbx
+    44 00000058 754E                        jne  do_jne     ;Not equals
+    45                                      
+    46 0000005A 4839D8                      cmp rax,rbx
+    47 0000005D 7F5B                        jg  do_jg       ;Greater than
+    48                                      
+    49 0000005F 4839D8                      cmp rax,rbx  
+    50 00000062 7D6D                        jge do_jge      ;Greater than equals
+    51                                      
+    52 00000064 4839D8                      cmp rax,rbx
+    53 00000067 7C7A                        jl  do_jl       ;Less than
+    54                                      
+    55 00000069 4839D8                      cmp rax,rbx
+    56 0000006C 0F8E85000000                jle do_jle      ;Less than equals
+    57                                      
+    58 00000072 4839D8                      cmp rax,rbx
+    59 00000075 0F8790000000                ja  do_ja       ;Greater than unsigned
+    60                                      
+    61 0000007B 4839D8                      cmp rax,rbx
+    62 0000007E 0F839B000000                jae do_jae      ;Greater than equals unsigned
+    63                                      
+    64 00000084 4839D8                      cmp rax,rbx
+    65 00000087 0F82A6000000                jb  do_jb       ;Less than unsigned
+    66                                      
+    67 0000008D 4839D8                      cmp rax,rbx
+    68 00000090 0F86B1000000                jbe do_jbe      ;less than equals unsigned
+    69                                      
+    70                                  do_je:
+    71 00000096 48BF-                       mov  rdi,fmt_je  ;inserts message of Equals to
+    71 00000098 [2600000000000000] 
+    72 000000A0 4831C0                      xor  rax,rax     ;necessary step to indicate no floating values are used
+    73 000000A3 E8(00000000)                call printf
+    74                                      ;jmp  exit
+    75                                      
+    76                                  do_jne:
+    77 000000A8 48BF-                       mov  rdi,fmt_jne ;inserts message of Not Equals to
+    77 000000AA [3500000000000000] 
+    78 000000B2 4831C0                      xor  rax,rax     ;necessary step to indicate no floating values are used
+    79 000000B5 E8(00000000)                call printf
+    80                                      ;jmp  exit
+    81                                      
+    82                                  do_jg:
+    83 000000BA 48BF-                       mov  rdi,fmt_jg
+    83 000000BC [4900000000000000] 
+    84 000000C4 4831C0                      xor  rax,rax
+    85 000000C7 E8(00000000)                call printf
+    86 000000CC E98A000000                  jmp  exit
+    87                                      
+    88                                  do_jge:
+    89 000000D1 48BF-                       mov  rdi,fmt_jge
+    89 000000D3 [5900000000000000] 
+    90 000000DB 4831C0                      xor  rax,rax
+    91 000000DE E8(00000000)                call printf
+    92                                      ;jmp  exit
+    93                                      
+    94                                  do_jl:
+    95 000000E3 48BF-                       mov  rdi,fmt_jl
+    95 000000E5 [7400000000000000] 
+    96 000000ED 4831C0                      xor  rax,rax
+    97 000000F0 E8(00000000)                call printf
+    98 000000F5 EB64                        jmp  exit
+    99                                      
+   100                                  do_jle:
+   101 000000F7 48BF-                       mov  rdi,fmt_jle
+   101 000000F9 [8100000000000000] 
+   102 00000101 4831C0                      xor  rax,rax
+   103 00000104 E8(00000000)                call printf
+   104 00000109 EB50                        jmp  exit
+   105                                      
+   106                                  do_ja:
+   107 0000010B 48BF-                       mov  rdi,fmt_ja
+   107 0000010D [9900000000000000] 
+   108 00000115 4831C0                      xor  rax,rax
+   109 00000118 E8(00000000)                call printf
+   110 0000011D EB3C                        jmp  exit
+   111                                      
+   112                                  do_jae:
+   113 0000011F 48BF-                       mov  rdi,fmt_jae
+   113 00000121 [B200000000000000] 
+   114 00000129 4831C0                      xor  rax,rax
+   115 0000012C E8(00000000)                call printf
+   116 00000131 EB28                        jmp  exit
+   117                                      
+   118                                  do_jb:
+   119 00000133 48BF-                       mov  rdi,fmt_jb
+   119 00000135 [D600000000000000] 
+   120 0000013D 4831C0                      xor  rax,rax
+   121 00000140 E8(00000000)                call printf
+   122 00000145 EB14                        jmp  exit
+   123                                      
+   124                                  do_jbe:
+   125 00000147 48BF-                       mov  rdi,fmt_jbe
+   125 00000149 [EC00000000000000] 
+   126 00000151 4831C0                      xor  rax,rax
+   127 00000154 E8(00000000)                call printf
+   128 00000159 EB00                        jmp  exit
+   129                                      
+   130                                  exit:
+   131 0000015B C9                          leave
+   132 0000015C C3                          ret

@@ -1,0 +1,289 @@
+     1                                  ;Org.asm
+     2                                  extern printf
+     3                                  extern scanf
+     4                                  extern exit
+     5                                  
+     6                                  section .bss
+     7 00000000 ????????                    n       resd 1   ;size of array
+     8 00000004 <res 190h>                  array   resd 100 ;array variable like arr[MAX] MAX=100
+     9 00000194 ????????                    i       resd 1   ;loop counter
+    10 00000198 ????????                    choice  resd 1   ;take the choice from user
+    11 0000019C ????????                    temp    resd 1   ;stores the temp value of i during sorting
+    12 000001A0 ????????                    target  resd 1   ;the item to be searched
+    13                                          
+    14                                  section .data
+    15 00000000 456E74657220746865-         msg1      db "Enter the no. of Elements",10,0
+    15 00000009 206E6F2E206F662045-
+    15 00000012 6C656D656E74730A00 
+    16 0000001B 456E74657220656C65-         msg2      db "Enter element %d:",0
+    16 00000024 6D656E742025643A00 
+    17 0000002D 312E20536F72742041-         msg_menu  db "1. Sort Ascending", 10, "2. Sort Descending", 10
+    17 00000036 7363656E64696E670A-
+    17 0000003F 322E20536F72742044-
+    17 00000048 657363656E64696E67-
+    17 00000051 0A                 
+    18 00000052 332E20536561726368-                   db "3. Search Element", 10, "4. Print Even Numbers", 10
+    18 0000005B 20456C656D656E740A-
+    18 00000064 342E205072696E7420-
+    18 0000006D 4576656E204E756D62-
+    18 00000076 6572730A           
+    19 0000007A 352E20457869740A45-                   db "5. Exit", 10, "Enter choice: ", 0
+    19 00000083 6E7465722063686F69-
+    19 0000008C 63653A2000         
+    20 00000091 456C656D656E742066-         msg_found db "Element found at position %d",10,0
+    20 0000009A 6F756E642061742070-
+    20 000000A3 6F736974696F6E2025-
+    20 000000AC 640A00             
+    21 000000AF 456C656D656E74206E-         msg_nf    db "Element not found",10,0
+    21 000000B8 6F7420666F756E640A-
+    21 000000C1 00                 
+    22 000000C2 256400                      fmt_in    db "%d",0
+    23 000000C5 256400                      fmt_out   db "%d",0
+    24 000000C8 0A00                        newline   db 10,0
+    25                                      
+    26                                  section .text
+    27                                      global main           
+    28                                  main:
+    29 00000000 55                          push rbp
+    30 00000001 4889E5                      mov  rbp,rsp
+    31                                      
+    32                                      ;array size
+    33 00000004 48BF-                       mov  rdi,msg1
+    33 00000006 [0000000000000000] 
+    34 0000000E 4831C0                      xor  rax,rax
+    35 00000011 E8(00000000)                call printf
+    36                                      
+    37 00000016 48BF-                       mov  rdi,fmt_in
+    37 00000018 [C200000000000000] 
+    38 00000020 48BE-                       mov  rsi,n
+    38 00000022 [0000000000000000] 
+    39 0000002A 4831C0                      xor  rax,rax
+    40 0000002D E8(00000000)                call scanf
+    41                                      
+    42                                      ;i=0
+    43 00000032 C70425[94010000]00-         mov  dword[i],0
+    43 0000003A 000000             
+    44                                      
+    45                                  read_loop:
+    46 0000003D 8B0425[94010000]            mov  eax,[i]
+    47 00000044 8B1C25[00000000]            mov  ebx,[n]
+    48 0000004B 39D8                        cmp  eax,ebx
+    49 0000004D 7D3E                        jge  menu
+    50                                      
+    51 0000004F 48BF-                       mov  rdi,msg2
+    51 00000051 [1B00000000000000] 
+    52 00000059 89C6                        mov  esi,eax
+    53 0000005B 4831C0                      xor  rax,rax
+    54 0000005E E8(00000000)                call printf
+    55                                      
+    56 00000063 8B0425[94010000]            mov  eax,[i]
+    57 0000006A 488D3485[04000000]          lea  rsi,[array + rax*4]
+    58 00000072 48BF-                       mov  rdi,fmt_in
+    58 00000074 [C200000000000000] 
+    59 0000007C 4831C0                      xor  rax,rax
+    60 0000007F E8(00000000)                call scanf               ;scanf("%d", &array[i]);
+    61                                      
+    62 00000084 FF0425[94010000]            inc  dword[i]            ;i++
+    63 0000008B EBB0                        jmp  read_loop
+    64                                      
+    65                                  menu:
+    66                                      ;show menu
+    67                                  menu_loop:
+    68 0000008D 48BF-                       mov  rdi,msg_menu
+    68 0000008F [2D00000000000000] 
+    69 00000097 4831C0                      xor  rax,rax
+    70 0000009A E8(00000000)                call printf
+    71                                      
+    72 0000009F 48BF-                       mov  rdi,fmt_in
+    72 000000A1 [C200000000000000] 
+    73 000000A9 48BE-                       mov  rsi,choice
+    73 000000AB [9801000000000000] 
+    74 000000B3 4831C0                      xor  rax,rax
+    75 000000B6 E8(00000000)                call scanf
+    76                                      
+    77 000000BB 8B0425[98010000]            mov  eax,[choice]
+    78 000000C2 83F801                      cmp  eax,1
+    79 000000C5 7426                        je   sort_asc
+    80 000000C7 83F802                      cmp  eax,2
+    81 000000CA 0F848A000000                je   sort_desc
+    82 000000D0 83F803                      cmp  eax,3
+    83 000000D3 0F84F0000000                je   search
+    84 000000D9 83F804                      cmp  eax,4
+    85 000000DC 0F8480010000                je   even
+    86 000000E2 83F805                      cmp  eax,5
+    87 000000E5 0F8428020000                je   end_prog
+    88 000000EB EBA0                        jmp  menu_loop
+    89                                      
+    90                                  ; ---------- Sorting Ascending ----------------
+    91                                  sort_asc:                                                             
+    92 000000ED C70425[94010000]00-         mov  dword[i],0
+    92 000000F5 000000             
+    93                                  outer_asc:
+    94 000000F8 8B0425[94010000]            mov  eax,[i]       
+    95 000000FF 8B1C25[00000000]            mov  ebx,[n]
+    96                                      ;dec  ebx
+    97 00000106 39D8                        cmp  eax,ebx
+    98 00000108 7D4B                        jge  done_sort_asc
+    99                                      
+   100 0000010A 890425[9C010000]            mov  dword[temp],eax
+   101 00000111 FF0425[94010000]            inc  dword[i]
+   102                                  inner_asc:
+   103 00000118 8B0425[9C010000]            mov  eax,[temp]
+   104 0000011F 8B1C25[00000000]            mov  ebx,[n]
+   105 00000126 FFCB                        dec  ebx
+   106 00000128 39D8                        cmp  eax,ebx
+   107 0000012A 7DCC                        jge  outer_asc
+   108                                      
+   109 0000012C 8B0C85[04000000]            mov  ecx,[array + rax*4]
+   110 00000133 8B1485[08000000]            mov  edx,[array + rax*4 + 4]
+   111 0000013A 39D1                        cmp  ecx,edx
+   112 0000013C 7E0E                        jle  no_swapa
+   113                                      
+   114                                      ; swap array[i] and array[i+1]
+   115 0000013E 891485[04000000]            mov  [array + rax*4],edx
+   116 00000145 890C85[08000000]            mov  [array + rax*4 +4],ecx
+   117                                      
+   118                                  no_swapa:
+   119 0000014C FF0425[9C010000]            inc  dword[temp]
+   120 00000153 EBC3                        jmp  inner_asc
+   121                                      
+   122                                  done_sort_asc:
+   123 00000155 E964010000                  jmp  print_all
+   124                                      
+   125                                  ; ---------- Sorting Descending ----------
+   126                                  sort_desc:
+   127 0000015A C70425[94010000]00-         mov  dword[i],0
+   127 00000162 000000             
+   128                                  outer_desc:
+   129 00000165 8B0425[94010000]            mov  eax,[i]
+   130 0000016C 8B1C25[00000000]            mov  ebx,[n]
+   131 00000173 FFCB                        dec  ebx
+   132 00000175 39D8                        cmp  eax,ebx
+   133 00000177 7D4B                        jge  done_sort_desc
+   134                                      
+   135 00000179 890425[9C010000]            mov  dword[temp],eax
+   136 00000180 FF0425[94010000]            inc  dword[i]   
+   137                                  inner_desc:
+   138 00000187 8B0425[9C010000]            mov  eax,[temp]
+   139 0000018E 8B1C25[00000000]            mov  ebx,[n]
+   140 00000195 FFCB                        dec  ebx
+   141 00000197 39D8                        cmp  eax,ebx
+   142 00000199 7DCA                        jge  outer_desc
+   143                                      
+   144 0000019B 8B0C85[04000000]            mov  ecx,[array + rax*4]
+   145 000001A2 8B1485[08000000]            mov  edx,[array + rax*4 + 4]
+   146 000001A9 39D1                        cmp  ecx,edx
+   147 000001AB 7D0E                        jge  no_swapd
+   148                                      
+   149                                      ;swap array[i] and array[i+1]
+   150 000001AD 891485[04000000]            mov  [array + rax*4],edx
+   151 000001B4 890C85[08000000]            mov  [array + rax*4 + 4],ecx
+   152                                      
+   153                                  no_swapd:
+   154 000001BB FF0425[9C010000]            inc  dword[temp]
+   155 000001C2 EBC3                        jmp  inner_desc
+   156                                          
+   157                                  done_sort_desc:
+   158 000001C4 E9F5000000                  jmp  print_all
+   159                                      
+   160                                  ; ---------- Search ----------
+   161                                  search:
+   162 000001C9 48BF-                       mov  rdi,fmt_in
+   162 000001CB [C200000000000000] 
+   163 000001D3 48BE-                       mov  rsi,target
+   163 000001D5 [A001000000000000] 
+   164 000001DD 4831C0                      xor  rax,rax
+   165 000001E0 E8(00000000)                call scanf
+   166                                      
+   167 000001E5 C70425[94010000]00-         mov  dword[i],0
+   167 000001ED 000000             
+   168                                      
+   169                                  search_loop:
+   170 000001F0 8B0425[94010000]            mov  eax,[i]
+   171 000001F7 8B1C25[00000000]            mov  ebx,[n]
+   172 000001FE 39D8                        cmp  eax,ebx
+   173 00000200 7D49                        jge  not_found
+   174                                      
+   175 00000202 8B0C85[04000000]            mov  ecx,[array + rax*4]
+   176 00000209 3B0C25[A0010000]            cmp  ecx,[target]
+   177 00000210 7409                        je   found
+   178                                      
+   179 00000212 FF0425[94010000]            inc  dword[i]
+   180 00000219 EBD5                        jmp  search_loop
+   181                                      
+   182                                  found:
+   183 0000021B 48BF-                       mov  rdi,msg_found
+   183 0000021D [9100000000000000] 
+   184 00000225 8B3425[94010000]            mov  esi,[i]
+   185 0000022C 4831C0                      xor  rax,rax
+   186 0000022F E8(00000000)                call printf
+   187 00000234 48BF-                       mov  rdi,newline
+   187 00000236 [C800000000000000] 
+   188 0000023E 4831C0                      xor  rax,rax
+   189 00000241 E8(00000000)                call printf
+   190 00000246 E942FEFFFF                  jmp  menu_loop
+   191                                      
+   192                                  not_found:
+   193 0000024B 48BF-                       mov  rdi,msg_nf
+   193 0000024D [AF00000000000000] 
+   194 00000255 4831C0                      xor  rax,rax
+   195 00000258 E8(00000000)                call printf
+   196 0000025D E92BFEFFFF                  jmp  menu_loop
+   197                                      
+   198                                  ; ---------- Even Numbers ----------    
+   199                                  even:
+   200 00000262 C70425[94010000]00-         mov  dword[i],0
+   200 0000026A 000000             
+   201                                      
+   202                                  even_loop:
+   203 0000026D 8B0425[94010000]            mov  eax,[i]
+   204 00000274 8B1C25[00000000]            mov  ebx,[n]
+   205 0000027B 39D8                        cmp  eax,ebx
+   206 0000027D 0F8D0AFEFFFF                jge  menu_loop
+   207                                      
+   208 00000283 8B1C85[04000000]            mov  ebx,[array + rax*4]
+   209 0000028A F6C301                      test bl,1
+   210 0000028D 7526                        jnz  not_even
+   211                                      
+   212 0000028F 48BF-                       mov  rdi,fmt_out
+   212 00000291 [C500000000000000] 
+   213 00000299 89DE                        mov  esi,ebx
+   214 0000029B 4831C0                      xor  rax,rax
+   215 0000029E E8(00000000)                call printf
+   216 000002A3 48BF-                       mov  rdi,newline
+   216 000002A5 [C800000000000000] 
+   217 000002AD 4831C0                      xor  rax,rax
+   218 000002B0 E8(00000000)                call printf
+   219                                      
+   220                                  not_even:
+   221 000002B5 FF0425[94010000]            inc  dword[i]
+   222 000002BC EBAF                        jmp  even_loop
+   223                                      
+   224                                  ; ---------- Print All --------------
+   225                                  print_all:
+   226 000002BE C70425[94010000]00-         mov  dword[i],0
+   226 000002C6 000000             
+   227                                  print_loop:
+   228 000002C9 8B0425[94010000]            mov  eax,[i]
+   229 000002D0 8B1C25[00000000]            mov  ebx,[n]
+   230 000002D7 39D8                        cmp  eax,ebx
+   231 000002D9 0F8DAEFDFFFF                jge  menu_loop
+   232                                      
+   233 000002DF 8B3485[04000000]            mov  esi,[array + rax*4]
+   234 000002E6 48BF-                       mov  rdi,fmt_out
+   234 000002E8 [C500000000000000] 
+   235 000002F0 4831C0                      xor  rax,rax
+   236 000002F3 E8(00000000)                call printf
+   237 000002F8 48BF-                       mov  rdi,newline
+   237 000002FA [C800000000000000] 
+   238 00000302 4831C0                      xor  rax,rax
+   239 00000305 E8(00000000)                call printf    
+   240                                      
+   241 0000030A FF0425[94010000]            inc  dword[i]
+   242 00000311 EBB6                        jmp  print_loop
+   243                                      
+   244                                  ; ------------ Exit ------------------
+   245                                  end_prog:
+   246 00000313 BF00000000                  mov  rdi,0
+   247 00000318 E8(00000000)                call exit  
+   248                                      

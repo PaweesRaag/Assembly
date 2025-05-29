@@ -1,0 +1,74 @@
+     1                                  ;Pattern.asm
+     2                                  extern scanf
+     3                                  extern printf
+     4                                  
+     5                                  section .bss
+     6 00000000 ????????                    n resd 1
+     7                                          
+     8                                  section .data
+     9 00000000 256400                      fmt_in   db "%d",0
+    10 00000003 456E7465722061206E-         msg      db "Enter a no.",10,0
+    10 0000000C 6F2E0A00           
+    11 00000010 25642000                    fmt_out  db "%d ",0
+    12 00000014 0A00                        newline  db 10,0
+    13                                      
+    14                                  section .text
+    15                                      global main
+    16                                  main:
+    17 00000000 55                          push rbp        ;stack initialization
+    18 00000001 4889E5                      mov  rbp,rsp
+    19 00000004 4883ED10                    sub  rbp,16
+    20                                      
+    21 00000008 48BF-                       mov  rdi,msg    ;Message printing
+    21 0000000A [0300000000000000] 
+    22 00000012 4831C0                      xor  rax,rax
+    23 00000015 E8(00000000)                call printf
+    24                                                         
+    25 0000001A 48BF-                       mov  rdi,fmt_in ;Taking the degree as n
+    25 0000001C [0000000000000000] 
+    26 00000024 48BE-                       mov  rsi,n
+    26 00000026 [0000000000000000] 
+    27 0000002E 4831C0                      xor  rax,rax
+    28 00000031 E8(00000000)                call scanf
+    29                                      
+    30 00000036 B901000000                  mov  ecx,1      ;outer loop counter i set to 1
+    31                                      
+    32                                      ;Outer loop for(i=1;i<n;i++)
+    33                                  loop_out:
+    34 0000003B 8B0425[00000000]            mov  eax,[n]
+    35 00000042 39C1                        cmp  ecx,eax
+    36 00000044 7F37                        jg   exit       ;if i>n exit
+    37                                      
+    38                                      ;j=1
+    39 00000046 BA01000000                  mov  edx,1      ;inner loop counter j
+    40                                      
+    41                                      ;Inner loop for (j=1;j<i;j++)
+    42                                  loop_in:
+    43 0000004B 39CA                        cmp  edx,ecx
+    44 0000004D 7F18                        jg   enter     ;if j>i print newline
+    45                                      
+    46                                      ;print j
+    47                                   
+    48 0000004F 89D6                        mov  esi,edx
+    49 00000051 48BF-                       mov  rdi,fmt_out
+    49 00000053 [1000000000000000] 
+    50 0000005B 4831C0                      xor  rax,rax
+    51 0000005E E8(00000000)                call printf
+    52                                      
+    53 00000063 FFC2                        inc  edx
+    54                                      
+    55 00000065 EBE4                        jmp  loop_in
+    56                                      
+    57                                  enter:
+    58 00000067 48BF-                       mov  rdi,newline
+    58 00000069 [1400000000000000] 
+    59 00000071 4831C0                      xor  rax,rax
+    60 00000074 E8(00000000)                call printf
+    61                                      
+    62                                      
+    63 00000079 FFC1                        inc  ecx
+    64 0000007B EBBE                        jmp  loop_out
+    65                                      
+    66                                  exit:
+    67 0000007D C9                          leave
+    68 0000007E C3                          ret

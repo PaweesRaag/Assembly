@@ -1,0 +1,89 @@
+     1                                  ;usinarr.asm
+     2                                  extern printf
+     3                                  extern scanf
+     4                                  
+     5                                  section .bss
+     6 00000000 ????????                    n     resd 1   ;variable to store array size
+     7 00000004 <res 190h>                  array resd 100 ;arrays with 100 integers max like arr[MAX]
+     8 00000194 ????????                    i     resd 1   ;loop counter
+     9                                      
+    10                                  section .data
+    11 00000000 456E74657220746865-         msg1    db "Enter the size of Array",10,0
+    11 00000009 2073697A65206F6620-
+    11 00000012 41727261790A00     
+    12 00000019 256400                      fmt_in  db "%d",0
+    13 0000001C 456E74657220656C65-         msg2    db "Enter element %d: ",0
+    13 00000025 6D656E742025643A20-
+    13 0000002E 00                 
+    14 0000002F 596F7520656E746572-         fmt_out db "You entered: %d",10,0
+    14 00000038 65643A2025640A00   
+    15                                      
+    16                                  section .text
+    17                                      global main
+    18                                  main:
+    19 00000000 55                          push rbp
+    20 00000001 4889E5                      mov  rbp,rsp
+    21 00000004 4883ED10                    sub  rbp,16
+    22                                      
+    23 00000008 48BF-                       mov  rdi,msg1  ;Print -> Enter the size 
+    23 0000000A [0000000000000000] 
+    24 00000012 4831C0                      xor  rax,rax
+    25 00000015 E8(00000000)                call printf
+    26                                      
+    27 0000001A 48BF-                       mov  rdi,fmt_in ;Accepts the size
+    27 0000001C [1900000000000000] 
+    28 00000024 48BE-                       mov  rsi,n
+    28 00000026 [0000000000000000] 
+    29 0000002E 4831C0                      xor  rax,rax
+    30 00000031 E8(00000000)                call scanf
+    31                                      
+    32 00000036 C70425[94010000]00-         mov  dword[i],0 ;set i=0
+    32 0000003E 000000             
+    33                                      
+    34                                  read_loop:
+    35 00000041 8B0425[94010000]            mov  eax,[i]
+    36 00000048 8B1C25[00000000]            mov  ebx,[n]
+    37 0000004F 39D8                        cmp  eax,ebx   
+    38 00000051 7D3E                        jge  print_loop;when i>=n exits to print
+    39                                      
+    40 00000053 48BF-                       mov  rdi,msg2  ;print "Enter no. %d"
+    40 00000055 [1C00000000000000] 
+    41 0000005D 89C6                        mov  esi,eax
+    42 0000005F 4831C0                      xor  rax,rax
+    43 00000062 E8(00000000)                call printf
+    44                                      
+    45 00000067 8B0425[94010000]            mov  eax,[i]
+    46 0000006E 488D3485[04000000]          lea  rsi,[array + rax*4]
+    47 00000076 48BF-                       mov  rdi,fmt_in;takes the elements of array
+    47 00000078 [1900000000000000] 
+    48 00000080 4831C0                      xor  rax,rax
+    49 00000083 E8(00000000)                call scanf     ;scanf("%d", &array[i]);
+    50                                      
+    51 00000088 FF0425[94010000]            inc  dword[i]  ;i++
+    52 0000008F EBB0                        jmp  read_loop
+    53                                      
+    54                                  print_loop:
+    55 00000091 C70425[94010000]00-         mov  dword[i],0
+    55 00000099 000000             
+    56                                      
+    57                                  print_each:
+    58 0000009C 8B0425[94010000]            mov  eax,[i]   ;Re-initializing the loop
+    59 000000A3 8B1C25[00000000]            mov  ebx,[n] 
+    60 000000AA 39D8                        cmp  eax,ebx
+    61 000000AC 7D29                        jge  exit
+    62                                      
+    63 000000AE 8B0425[94010000]            mov  eax,[i]   ;loading the array
+    64 000000B5 8B3485[04000000]            mov  esi,[array + rax*4]
+    65 000000BC 48BF-                       mov  rdi,fmt_out
+    65 000000BE [2F00000000000000] 
+    66 000000C6 4831C0                      xor  rax,rax
+    67 000000C9 E8(00000000)                call printf
+    68                                      
+    69 000000CE FF0425[94010000]            inc  dword[i]
+    70 000000D5 EBC5                        jmp  print_each
+    71                                      
+    72                                  exit:
+    73 000000D7 C9                          leave
+    74 000000D8 C3                          ret
+    75                                      
+    76                                      

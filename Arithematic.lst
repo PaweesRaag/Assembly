@@ -1,0 +1,118 @@
+     1                                  ;Arithematic.asm
+     2                                  extern scanf
+     3                                  extern printf
+     4                                  
+     5                                  section .bss
+     6 00000000 ????????                    num1   resd 1
+     7 00000004 ????????                    num2   resd 1
+     8 00000008 ????????                    result resd 1
+     9 0000000C ????????                    op     resd 1
+    10                                      
+    11                                  section .data
+    12 00000000 456E74657220317374-         msg1    db "Enter 1st no.",10,0
+    12 00000009 206E6F2E0A00       
+    13 0000000F 456E74657220326E64-         msg2    db "Enter 2nd no.",10,0
+    13 00000018 206E6F2E0A00       
+    14 0000001E 456E74657220746865-         msg3    db "Enter the opertation (+-/*)",10,0
+    14 00000027 206F70657274617469-
+    14 00000030 6F6E20282B2D2F2A29-
+    14 00000039 0A00               
+    15 0000003B 256400                      fmt_in  db "%d",0
+    16 0000003E 20256300                    fmt_op  db " %c",0
+    17 00000042 526573756C743D2025-         fmt_out db "Result= %d",10,0
+    17 0000004B 640A00             
+    18                                      
+    19                                  section .text
+    20                                      global main
+    21                                  main:
+    22 00000000 55                          push rbp
+    23 00000001 4889E5                      mov  rbp,rsp
+    24 00000004 4883EC10                    sub  rsp,16
+    25                                      
+    26 00000008 48BF-                       mov  rdi,msg1
+    26 0000000A [0000000000000000] 
+    27 00000012 4831C0                      xor  rax,rax
+    28 00000015 E8(00000000)                call printf
+    29                                      
+    30 0000001A 48BF-                       mov  rdi,fmt_in
+    30 0000001C [3B00000000000000] 
+    31 00000024 48BE-                       mov  rsi,num1
+    31 00000026 [0000000000000000] 
+    32 0000002E 4831C0                      xor  rax,rax
+    33 00000031 E8(00000000)                call scanf
+    34                                      
+    35 00000036 48BF-                       mov  rdi,msg2
+    35 00000038 [0F00000000000000] 
+    36 00000040 4831C0                      xor  rax,rax
+    37 00000043 E8(00000000)                call printf
+    38                                      
+    39 00000048 48BF-                       mov  rdi,fmt_in
+    39 0000004A [3B00000000000000] 
+    40 00000052 48BE-                       mov  rsi,num2
+    40 00000054 [0400000000000000] 
+    41 0000005C 4831C0                      xor  rax,rax
+    42 0000005F E8(00000000)                call scanf
+    43                                      
+    44 00000064 48BF-                       mov  rdi,msg3
+    44 00000066 [1E00000000000000] 
+    45 0000006E 4831C0                      xor  rax,rax
+    46 00000071 E8(00000000)                call printf
+    47                                      
+    48 00000076 48BF-                       mov  rdi,fmt_op
+    48 00000078 [3E00000000000000] 
+    49 00000080 488D35(0C000000)            lea  rsi,[rel op] ;let's assume op is a box doing <mov rsi,op> would be like "Get what's inside the box." but <lea rsi,[rel op]> means "Give me the location of the box.". This is because Scanf needs to know where to put something, not what’s already in the box. 
+    50 00000087 4831C0                      xor  rax,rax
+    51 0000008A E8(00000000)                call scanf        ;scanf(" %c", &op);
+    52                                      
+    53 0000008F 8B0425[00000000]            mov  eax,[num1]
+    54 00000096 8B1C25[04000000]            mov  ebx,[num2]
+    55 0000009D 8A0C25[0C000000]            mov  cl ,[op]
+    56                                      
+    57 000000A4 80F92B                      cmp  cl ,'+'
+    58 000000A7 7411                        je   do_add
+    59 000000A9 80F92D                      cmp  cl ,'-'
+    60 000000AC 7410                        je   do_sub
+    61 000000AE 80F92F                      cmp  cl ,'/'
+    62 000000B1 7414                        je   do_div
+    63 000000B3 80F92A                      cmp  cl ,'*'
+    64 000000B6 740A                        je   do_mul
+    65                                      
+    66 000000B8 EB3A                        jmp  exit
+    67                                      
+    68                                  do_add:
+    69 000000BA 01D8                        add  eax,ebx   ;eax+ebx -> eax
+    70 000000BC EB14                        jmp  in_result
+    71                                      
+    72                                  do_sub:
+    73 000000BE 29D8                        sub  eax,ebx
+    74 000000C0 EB10                        jmp  in_result
+    75                                      
+    76                                  do_mul:
+    77 000000C2 0FAFC3                      imul  eax,ebx
+    78 000000C5 EB0B                        jmp  in_result
+    79                                      
+    80                                  do_div:
+    81                                      ;Handles div by zero
+    82 000000C7 83FB00                      cmp  ebx,0
+    83 000000CA 7428                        je   exit
+    84 000000CC 31D2                        xor  edx,edx   ;Clears edx. This is important because idiv (signed division) uses both edx:eax as the full numerator.full numerator = edx:eax  (edx is the high part, eax is the low part)
+    85 000000CE F7FB                        idiv ebx
+    86 000000D0 EB00                        jmp  in_result
+    87                                      
+    88                                  in_result:
+    89 000000D2 890425[08000000]            mov  [result],eax
+    90                                      
+    91                                      ;Print result
+    92 000000D9 8B0425[08000000]            mov  eax,[result]
+    93 000000E0 89C6                        mov  esi,eax
+    94 000000E2 48BF-                       mov  rdi,fmt_out
+    94 000000E4 [4200000000000000] 
+    95 000000EC 4831C0                      xor  rax,rax
+    96 000000EF E8(00000000)                call printf
+    97                                      
+    98                                  exit:
+    99 000000F4 C9                          leave
+   100 000000F5 C3                          ret
+   101                                      
+   102                                      
+   103                                      
