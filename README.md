@@ -1,3 +1,5 @@
+<img align="center" height="100" src="https://github.com/user-attachments/assets/0d90bcfe-9aaa-4b57-bc63-163f9dc3741e"/>
+
 # 🛠️ Assembly Playground
 
 Welcome to my Assembly language experiments and practice programs. This contains all the programs that you need to deeply understand in order to master Assembly (well not enough to code a kernel duh!! But enough to be a good Reverse Engineer). Use ChatGPT with my personal comments and follow along.
